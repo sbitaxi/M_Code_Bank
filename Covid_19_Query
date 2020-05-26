@@ -1,0 +1,10 @@
+// Queries Data from https://github.com/CSSEGISandData/COVID-19
+let
+    Date_To_Text = Text.End(Text.Format("0#[Month]-#[Day]-#[Year].csv", 
+                    DateTime.ToRecord(DateTime.LocalNow() - #duration(1, 0,0,0))),14),
+    Git_URL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/" & Date_To_Text,
+    Source = Csv.Document(Web.Contents(Git_URL),[Delimiter=",", Columns=18, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Province_State", type text}, {"Country_Region", type text}, {"Last_Update", type datetime}, {"Lat", type number}, {"Long_", type number}, {"Confirmed", Int64.Type}, {"Deaths", Int64.Type}, {"Recovered", Int64.Type}, {"Active", Int64.Type}, {"FIPS", Int64.Type}, {"Incident_Rate", type number}, {"People_Tested", Int64.Type}, {"People_Hospitalized", Int64.Type}, {"Mortality_Rate", type number}, {"UID", Int64.Type}, {"ISO3", type text}, {"Testing_Rate", type number}, {"Hospitalization_Rate", type number}})
+in
+    #"Changed Type"
